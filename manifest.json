@@ -1,14 +1,22 @@
 {
- "name": "EVENING CLASS (BHRM) 2026/2027",
- "short_name": "BHRM Evening",
- "description": "Portal ya Evening Class BHRM 2026/2027",
- "lang": "sw",
- "start_url": "./index.html",
+ "id": "./",
+ "name": "BHRM Evening Class 2026/2027",
+ "short_name": "BHRM",
+ "description": "Portal ya darasa la BHRM Evening Class",
+ "start_url": "./?source=pwa",
  "scope": "./",
  "display": "standalone",
+ "display_override": [
+  "standalone",
+  "minimal-ui"
+ ],
  "orientation": "portrait",
  "background_color": "#0a1a4a",
  "theme_color": "#0a1a4a",
+ "lang": "sw",
+ "categories": [
+  "education"
+ ],
  "icons": [
   {
    "src": "icon-192.png",
