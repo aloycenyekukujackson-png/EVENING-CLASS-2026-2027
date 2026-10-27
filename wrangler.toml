@@ -1,0 +1,9 @@
+name = "sanda-api"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Websites allowed to call this API (comma separated, no trailing slash)
+ALLOWED_ORIGIN = "https://aloycenyekukujackson-png.github.io"
+# Fast and low-cost model; change if you want
+MODEL = "claude-haiku-5-5"
