@@ -1,0 +1,74 @@
+<!-- ===== HRM TODAY VIDEO WIDGET (paste inside your HRM today section) ===== -->
+<section id="hrm-video" data-base="">
+  <style>
+    #hrm-video{--navy:#0a1a4a;--gold:#f2b633;--ink:#0b1440;--line:#dfe3f3;font-family:Roboto,system-ui,sans-serif;color:var(--ink)}
+    #hrm-video h2{font-family:"Noto Serif",Georgia,serif;font-size:2rem;margin:.2em 0 .5em;color:var(--navy)}
+    #hrm-video .card{background:#fff;border:1px solid var(--line);border-top:10px solid var(--gold);border-radius:28px;padding:16px}
+    #hrm-video .nav{display:flex;gap:10px;align-items:center}
+    #hrm-video .nav button{width:52px;height:52px;border-radius:16px;border:2px solid var(--line);background:#fff;font-size:22px;color:var(--navy)}
+    #hrm-video .date{flex:1;text-align:center;background:var(--gold);border-radius:999px;padding:12px 10px;font-weight:700;font-size:.95rem}
+    #hrm-video .topic{font-family:"Noto Serif",Georgia,serif;font-size:1.5rem;font-weight:700;margin:14px 2px 10px;color:var(--navy)}
+    #hrm-video .player{border-radius:20px;overflow:hidden;background:#050d2e;display:flex;justify-content:center}
+    #hrm-video video{width:100%;max-height:72vh;background:#050d2e;display:block}
+    #hrm-video .actions{display:flex;gap:10px;margin-top:12px}
+    #hrm-video .btn{flex:1;text-align:center;text-decoration:none;border:0;border-radius:16px;padding:14px;font-weight:700;font-size:1rem;background:var(--navy);color:#fff}
+    #hrm-video .btn.gold{background:var(--gold);color:var(--ink)}
+    #hrm-video .empty{padding:28px 12px;text-align:center;background:#f4f5fb;border-radius:20px}
+    #hrm-video .empty button{margin-top:12px}
+    #hrm-video [hidden]{display:none!important}
+  </style>
+  <h2>HRM today</h2>
+  <div class="card">
+    <div class="nav">
+      <button id="hv-prev" aria-label="Previous day">&#8249;</button>
+      <div class="date" id="hv-date"></div>
+      <button id="hv-next" aria-label="Next day">&#8250;</button>
+    </div>
+    <div id="hv-has" hidden>
+      <div class="topic" id="hv-topic"></div>
+      <div class="player"><video id="hv-video" controls playsinline preload="metadata"></video></div>
+      <div class="actions">
+        <a class="btn gold" id="hv-dl" download>&#11015; Download video</a>
+        <button class="btn" id="hv-share" hidden>Share</button>
+      </div>
+    </div>
+    <div id="hv-none" class="empty" hidden>
+      <div>Hakuna video ya siku hii bado.<br>No video for this day yet.</div>
+      <button class="btn gold" id="hv-latest">Latest video</button>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var root=document.getElementById('hrm-video'),BASE=root.getAttribute('data-base')||'';
+    var $=function(i){return document.getElementById(i)};
+    var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+        MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+    function parse(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2],12)}
+    var map={},dates=[],cur=iso(new Date()),today=cur;
+    function label(s){var d=parse(s);return (s===today?'Today \u00b7 ':'')+DAYS[d.getDay()]+', '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()}
+    function shift(n){var d=parse(cur);d.setDate(d.getDate()+n);cur=iso(d);render()}
+    function render(){
+      $('hv-date').textContent=label(cur);
+      var v=map[cur],has=$('hv-has'),none=$('hv-none'),vid=$('hv-video');
+      if(!v){has.hidden=true;none.hidden=false;vid.pause();return}
+      none.hidden=true;has.hidden=false;
+      $('hv-topic').textContent=v.title||'';
+      var src=BASE+v.video;
+      if(vid.getAttribute('data-src')!==src){vid.setAttribute('data-src',src);vid.src=src;vid.poster=v.poster?BASE+v.poster:''}
+      var a=$('hv-dl');a.href=BASE+(v.download||v.video);a.setAttribute('download','HRM-today-'+cur+'.mp4');
+    }
+    $('hv-prev').onclick=function(){shift(-1)};
+    $('hv-next').onclick=function(){shift(1)};
+    $('hv-latest').onclick=function(){if(dates.length){cur=dates[dates.length-1];render()}};
+    if(navigator.share){$('hv-share').hidden=false;$('hv-share').onclick=function(){
+      navigator.share({title:'HRM today \u2013 '+(map[cur]||{}).title,url:location.href.split('#')[0]}).catch(function(){})}}
+    fetch(BASE+'hrm-videos.json?'+Date.now()).then(function(r){return r.json()}).then(function(l){
+      l.forEach(function(v){map[v.date]=v});dates=Object.keys(map).sort();
+      if(!map[cur]&&dates.length){var past=dates.filter(function(d){return d<=cur});cur=past.length?past[past.length-1]:dates[dates.length-1]}
+      render();
+    }).catch(function(){render()});
+  })();
+  </script>
+</section>
+<!-- ===== END HRM TODAY VIDEO WIDGET ===== -->
